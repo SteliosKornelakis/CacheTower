@@ -7,7 +7,7 @@ namespace CacheTower
 	/// <summary>
 	/// Describes the status of the entry - whether it is expired, stale or access to an entry was a miss.
 	/// </summary>
-	internal enum CacheEntryStatus
+	public enum CacheEntryStatus
 	{
 		/// <summary>
 		/// When the cache entry is considered stale.

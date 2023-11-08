@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CacheTower.Internal;
 
-internal readonly struct CacheEntryKeyLock
+public readonly struct CacheEntryKeyLock
 {
 	private readonly Dictionary<string, TaskCompletionSource<ICacheEntry>?> keyLocks = new(StringComparer.Ordinal);
 

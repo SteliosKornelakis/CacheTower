@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CacheTower.Extensions
 {
-	internal class ExtensionContainer : ICacheExtension, ICacheChangeExtension, IDistributedLockExtension, IAsyncDisposable
+	public class ExtensionContainer : ICacheExtension, ICacheChangeExtension, IDistributedLockExtension, IAsyncDisposable
 	{
 		private bool Disposed;
 

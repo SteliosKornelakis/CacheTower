@@ -46,12 +46,12 @@ public readonly record struct CacheStackOptions
 /// </summary>
 public class CacheStack : ICacheStack, IFlushableCacheStack, IExtendableCacheStack, IAsyncDisposable
 {
-	private bool Disposed;
+	protected bool Disposed;
 
-	private readonly CacheEntryKeyLock KeyLock = new();
-	private readonly ILogger<CacheStack> Logger;
-	private readonly ICacheLayer[] CacheLayers;
-	private readonly ExtensionContainer Extensions;
+	protected readonly CacheEntryKeyLock KeyLock = new();
+	protected readonly ILogger<CacheStack> Logger;
+	protected readonly ICacheLayer[] CacheLayers;
+	protected readonly ExtensionContainer Extensions;
 
 	/// <summary>
 	/// Creates a new <see cref="CacheStack"/> with the provided <paramref name="options"/>.
@@ -176,7 +176,7 @@ public class CacheStack : ICacheStack, IFlushableCacheStack, IExtendableCacheSta
 		await InternalSetAsync(cacheKey, cacheEntry, CacheUpdateType.AddOrUpdateEntry);
 	}
 
-	private async ValueTask InternalSetAsync<T>(string cacheKey, CacheEntry<T> cacheEntry, CacheUpdateType cacheUpdateType)
+	protected virtual async ValueTask InternalSetAsync<T>(string cacheKey, CacheEntry<T> cacheEntry, CacheUpdateType cacheUpdateType)
 	{
 		for (int i = 0, l = CacheLayers.Length; i < l; i++)
 		{
@@ -229,7 +229,7 @@ public class CacheStack : ICacheStack, IFlushableCacheStack, IExtendableCacheSta
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private async ValueTask<(int LayerIndex, CacheEntry<T> CacheEntry)> GetWithLayerIndexAsync<T>(string cacheKey)
+	protected virtual async ValueTask<(int LayerIndex, CacheEntry<T> CacheEntry)> GetWithLayerIndexAsync<T>(string cacheKey)
 	{
 		for (var layerIndex = 0; layerIndex < CacheLayers.Length; layerIndex++)
 		{
@@ -305,7 +305,7 @@ public class CacheStack : ICacheStack, IFlushableCacheStack, IExtendableCacheSta
 		return (await RefreshValueAsync(cacheKey, valueFactory, settings, cacheEntryStatus))!.Value!;
 	}
 
-	private async ValueTask BackPopulateCacheAsync<T>(int fromIndexExclusive, string cacheKey, CacheEntry<T> cacheEntry)
+	protected virtual async ValueTask BackPopulateCacheAsync<T>(int fromIndexExclusive, string cacheKey, CacheEntry<T> cacheEntry)
 	{
 		if (KeyLock.AcquireLock(cacheKey))
 		{
@@ -327,7 +327,7 @@ public class CacheStack : ICacheStack, IFlushableCacheStack, IExtendableCacheSta
 		}
 	}
 
-	private async ValueTask<CacheEntry<T>?> RefreshValueAsync<T>(string cacheKey, Func<T, Task<T>> asyncValueFactory, CacheSettings settings, CacheEntryStatus entryStatus)
+	protected virtual async ValueTask<CacheEntry<T>?> RefreshValueAsync<T>(string cacheKey, Func<T, Task<T>> asyncValueFactory, CacheSettings settings, CacheEntryStatus entryStatus)
 	{
 		if (KeyLock.AcquireLock(cacheKey))
 		{
